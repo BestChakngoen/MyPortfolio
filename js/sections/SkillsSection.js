@@ -1,0 +1,66 @@
+const { Icons, EditableText } = window.PortfolioApp;
+
+window.PortfolioApp.SkillsSection = ({ titles, skillCategories, isEditing, onUpdate }) => {
+    const getIcon = (iconName) => {
+        const Component = Icons[iconName] || Icons.Terminal;
+        return <Component size={24} />;
+    };
+
+    return (
+        <section id="skills" className="py-20 bg-gray-900 relative">
+            <div className="container mx-auto px-6">
+                <div className="text-center mb-16">
+                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                        <EditableText value={titles.skills} onChange={(val) => onUpdate(['titles', 'skills'], val)} isEditing={isEditing} />
+                    </h2>
+                    <p className="text-gray-400">Stack & Technologies</p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+                    {skillCategories.map((category, index) => (
+                        <div key={index} className="bg-gray-800 p-6 rounded-2xl border border-gray-700 hover:border-orange-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/10 flex flex-col h-full relative">
+                            {isEditing && (
+                                <button onClick={() => {
+                                    const newSkills = skillCategories.filter((_, i) => i !== index);
+                                    onUpdate(['skillCategories'], newSkills);
+                                }} className="absolute top-2 right-2 text-red-500 hover:bg-red-500/20 p-1 rounded-full"><Icons.Trash2 size={16} /></button>
+                            )}
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="p-3 bg-gray-900 rounded-xl text-orange-500 border border-gray-700">{getIcon(category.iconType)}</div>
+                                <h3 className="text-lg font-bold text-white"><EditableText value={category.title} onChange={(val) => {
+                                    const newSkills = [...skillCategories]; newSkills[index].title = val; onUpdate(['skillCategories'], newSkills);
+                                }} isEditing={isEditing} /></h3>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                                {category.items.map((item, idx) => (
+                                    <div key={idx} className="relative group/item">
+                                        <span className="px-3 py-1 bg-gray-900/50 text-gray-300 rounded-md text-sm border border-gray-700/50 hover:border-orange-500/30 hover:text-orange-400 transition-colors cursor-default block">
+                                            <EditableText value={item} onChange={(val) => {
+                                                const newSkills = [...skillCategories]; newSkills[index].items[idx] = val; onUpdate(['skillCategories'], newSkills);
+                                            }} isEditing={isEditing} />
+                                        </span>
+                                        {isEditing && (
+                                            <button onClick={() => {
+                                                const newSkills = [...skillCategories]; newSkills[index].items = newSkills[index].items.filter((_, i) => i !== idx); onUpdate(['skillCategories'], newSkills);
+                                            }} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-0.5 w-4 h-4 flex items-center justify-center text-[10px] opacity-0 group-hover/item:opacity-100 transition-opacity">x</button>
+                                        )}
+                                    </div>
+                                ))}
+                                {isEditing && (
+                                    <button onClick={() => {
+                                        const newSkills = [...skillCategories]; newSkills[index].items.push("New Skill"); onUpdate(['skillCategories'], newSkills);
+                                    }} className="px-2 py-1 bg-green-600/50 hover:bg-green-600 text-white rounded-md text-xs flex items-center gap-1"><Icons.Plus size={12} /> Add</button>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                    {isEditing && (
+                        <button onClick={() => {
+                            const newSkills = [...skillCategories, { title: "New Category", iconType: "Terminal", items: ["Skill 1"] }];
+                            onUpdate(['skillCategories'], newSkills);
+                        }} className="bg-gray-800/50 border border-dashed border-gray-600 rounded-2xl flex items-center justify-center p-6 hover:bg-gray-800 hover:border-orange-500 text-gray-500 hover:text-orange-500 transition-all min-h-[150px]"><Icons.Plus size={32} /><span className="ml-2">Add Category</span></button>
+                    )}
+                </div>
+            </div>
+        </section>
+    );
+};
