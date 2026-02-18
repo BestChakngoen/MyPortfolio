@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio - Cloud Edition</title>
+
+    <!-- CSS Dependencies -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    animation: { 'fade-in': 'fadeIn 0.5s ease-out', 'fade-in-up': 'fadeInUp 0.5s ease-out' },
+                    keyframes: {
+                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+                        fadeInUp: { '0%': { opacity: '0', transform: 'translateY(10px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #111827;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #4b5563;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #f97316;
+        }
+    </style>
+
+    <!-- React Dependencies -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Global Initialization -->
+    <script>
+        window.PortfolioApp = {};
+    </script>
+
+    <!-- Firebase SDK Setup (Module) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // --- REPLACE YOUR CONFIG HERE ---
+        // เอาค่าที่คุณได้จาก Firebase Console มาแปะทับตรงนี้
+        const firebaseConfig = {
+            apiKey: "AIzaSyBu55EHAbfL_t7LDY-3zbJbj033cq06TLI",
+            authDomain: "my-portfolio-fb4ea.firebaseapp.com",
+            projectId: "my-portfolio-fb4ea",
+            storageBucket: "my-portfolio-fb4ea.firebasestorage.app",
+            messagingSenderId: "702372840796",
+            appId: "1:702372840796:web:caab24e346a3b67027ed99",
+            measurementId: "G-276MHES5PR"
+        };
+        // --------------------------------
+
+        // Init Firebase
+        let firebaseApp = {};
+        try {
+            const app = initializeApp(firebaseConfig);
+            firebaseApp = {
+                auth: getAuth(app),
+                db: getFirestore(app),
+                provider: new GoogleAuthProvider(),
+                signInWithPopup,
+                signOut,
+                onAuthStateChanged,
+                doc,
+                getDoc,
+                setDoc
+            };
+            console.log("Firebase SDK Loaded");
+        } catch (e) {
+            console.error("Firebase Init Error:", e);
+        }
+
+        // Expose to Global Scope for Service to pick up
+        window.PortfolioApp.firebaseApp = firebaseApp;
+    </script>
+</head>
+
+<body class="bg-gray-900 text-gray-200">
+    <div id="root"></div>
+
+    <!-- Load Scripts in Correct Order -->
+    <!-- 1. Data & Utils -->
+    <script type="text/babel" src="./js/data.js"></script>
+    <script type="text/babel" src="./js/icons.js"></script>
+
+    <!-- 2. Services & Logic (New) -->
+    <script type="text/babel" src="./js/service.js"></script>
+    <script type="text/babel" src="./js/shared.js"></script>
+
+    <!-- 3. Sections (Assuming these exist in your folder) -->
+    <script type="text/babel" src="./js/sections/HeroSection.js"></script>
+    <script type="text/babel" src="./js/sections/AboutSection.js"></script>
+    <script type="text/babel" src="./js/sections/SkillsSection.js"></script>
+    <script type="text/babel" src="./js/sections/ProjectsSection.js"></script>
+    <script type="text/babel" src="./js/sections/ContactSection.js"></script>
+
+    <!-- 4. Main App (New) -->
+    <script type="text/babel" src="./js/app.js"></script>
+</body>
+
+</html>

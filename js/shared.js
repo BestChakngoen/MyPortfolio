@@ -1,6 +1,6 @@
 const { Icons } = window.PortfolioApp;
 
-// Editable Text Component
+// Editable Text Component (Reuse เดิม)
 window.PortfolioApp.EditableText = ({ value, onChange, className, multiline = false, placeholder = "", isEditing }) => {
     if (!isEditing) return <span className={className}>{value || placeholder}</span>;
     if (multiline) {
@@ -9,7 +9,7 @@ window.PortfolioApp.EditableText = ({ value, onChange, className, multiline = fa
     return <input type="text" value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className={`bg-gray-700/50 border border-orange-500/50 rounded px-2 py-1 text-white focus:outline-none focus:border-orange-500 w-full max-w-full ${className}`} />;
 };
 
-// Game Modal
+// Game Modal (Reuse เดิม)
 window.PortfolioApp.GameModal = ({ project, onClose }) => (
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm animate-fade-in">
         <div className="bg-gray-800 w-full max-w-6xl aspect-video rounded-xl overflow-hidden relative shadow-2xl border border-gray-700 flex flex-col">
@@ -24,7 +24,7 @@ window.PortfolioApp.GameModal = ({ project, onClose }) => (
     </div>
 );
 
-// Lightbox
+// Lightbox (Reuse เดิม)
 window.PortfolioApp.Lightbox = ({ media, onClose }) => (
     <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/95 p-4 backdrop-blur-md animate-fade-in" onClick={onClose}>
         <button className="absolute top-4 right-4 p-2 bg-gray-800 rounded-full text-white hover:bg-red-600 transition-colors z-50" onClick={onClose}><Icons.X size={24} /></button>
@@ -34,18 +34,35 @@ window.PortfolioApp.Lightbox = ({ media, onClose }) => (
     </div>
 );
 
-// Admin Controls
-window.PortfolioApp.AdminControls = ({ isEditing, setIsEditing, onSave, onCancel }) => (
+// --- Admin Controls (Updated for Auth) ---
+window.PortfolioApp.AdminControls = ({ isEditing, setIsEditing, onSave, onCancel, user, onLogin, onLogout }) => (
     <>
+        {/* Toggle / Login Button */}
         <div className="fixed bottom-4 right-4 z-50 group">
-            <button onClick={() => setIsEditing(!isEditing)} className="p-2 bg-gray-800 rounded-full text-gray-600 hover:text-white hover:bg-orange-500 transition-all duration-300 opacity-0 group-hover:opacity-100 focus:opacity-100" title="Toggle Admin Mode"><Icons.Settings size={20} /></button>
+            <button 
+                onClick={() => user ? setIsEditing(!isEditing) : onLogin()} 
+                className={`p-3 rounded-full transition-all duration-300 shadow-lg ${user ? (isEditing ? 'bg-orange-500 text-white' : 'bg-green-600 text-white') : 'bg-gray-800 text-gray-400 hover:text-white'}`}
+                title={user ? "Toggle Admin Mode" : "Login to Edit"}
+            >
+                {user ? <Icons.Settings size={20} /> : <Icons.LogIn size={20} />}
+            </button>
         </div>
+
+        {/* Login Status Panel */}
+        {user && !isEditing && (
+            <div className="fixed bottom-4 right-20 z-50 bg-gray-800/90 backdrop-blur px-4 py-2 rounded-full border border-gray-700 flex items-center gap-3 animate-fade-in">
+                {user.photoURL && <img src={user.photoURL} alt="User" className="w-6 h-6 rounded-full border border-gray-500" />}
+                <span className="text-xs text-gray-300">Logged in as {user.displayName}</span>
+                <button onClick={onLogout} className="text-gray-400 hover:text-red-400 p-1" title="Logout"><Icons.LogOut size={14} /></button>
+            </div>
+        )}
+
+        {/* Edit Actions Panel */}
         {isEditing && (
-            <div className="fixed bottom-16 right-4 z-50 bg-gray-800 p-4 rounded-xl shadow-xl border border-gray-700 flex flex-col gap-2 animate-fade-in-up">
-                <div className="text-orange-500 font-bold mb-2 text-center">Admin Mode</div>
-                <button onClick={onSave} className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"><Icons.Save size={16} /> Save Changes</button>
-                <button onClick={onCancel} className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"><Icons.X size={16} /> Cancel</button>
-                <div className="text-xs text-gray-400 mt-2 text-center max-w-[150px]">Changes are saved to your browser's local storage.</div>
+            <div className="fixed bottom-16 right-4 z-50 bg-gray-800 p-4 rounded-xl shadow-xl border border-orange-500/50 flex flex-col gap-2 animate-fade-in-up">
+                <div className="text-orange-500 font-bold mb-2 text-center text-sm">ADMIN MODE</div>
+                <button onClick={onSave} className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-sm"><Icons.Save size={16} /> Save to Cloud</button>
+                <button onClick={onCancel} className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors text-sm"><Icons.X size={16} /> Discard</button>
             </div>
         )}
     </>
