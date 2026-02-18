@@ -37,6 +37,15 @@ window.PortfolioApp.Lightbox = ({ media, onClose }) => (
 // --- Admin Controls (Updated for Auth & Sharing) ---
 window.PortfolioApp.AdminControls = ({ isEditing, setIsEditing, onSave, onCancel, user, onLogin, onLogout, isOwner }) => {
     
+    // Check if we are in public view mode (has uid in URL)
+    const isPublicView = new URLSearchParams(window.location.search).has('uid');
+
+    // Determine visibility logic:
+    // 1. If 'isOwner' is true, ALWAYS show controls (User is logged in and viewing their own page).
+    // 2. If NO user is logged in AND it is NOT a public shared link (Home page), show Login button.
+    // 3. Otherwise (Visitor on shared link, or Logged in user viewing someone else's link), HIDE controls.
+    const showAuthButton = isOwner || (!user && !isPublicView);
+
     const copyShareLink = () => {
         if (!user) return;
         // Construct URL: current origin + path + ?uid=USER_ID
@@ -48,34 +57,38 @@ window.PortfolioApp.AdminControls = ({ isEditing, setIsEditing, onSave, onCancel
 
     return (
         <>
-            {/* Toggle / Login Button */}
-            <div className="fixed bottom-4 right-4 z-50 group">
-                <button 
-                    onClick={() => user ? setIsEditing(!isEditing) : onLogin()} 
-                    className={`p-3 rounded-full transition-all duration-300 shadow-lg ${user ? (isEditing ? 'bg-orange-500 text-white' : 'bg-green-600 text-white') : 'bg-gray-800 text-gray-400 hover:text-white'}`}
-                    title={user ? "Toggle Admin Mode" : "Login to Edit"}
-                >
-                    {user ? <Icons.Settings size={20} /> : <Icons.LogIn size={20} />}
-                </button>
-            </div>
+            {/* Toggle / Login Button - Conditionally Rendered */}
+            {showAuthButton && (
+                <div className="fixed bottom-4 right-4 z-50 group">
+                    <button 
+                        onClick={() => user ? setIsEditing(!isEditing) : onLogin()} 
+                        className={`p-3 rounded-full transition-all duration-300 shadow-lg ${user ? (isEditing ? 'bg-orange-500 text-white' : 'bg-green-600 text-white') : 'bg-gray-800 text-gray-400 hover:text-white'}`}
+                        title={user ? "Toggle Admin Mode" : "Login to Edit"}
+                    >
+                        {user ? <Icons.Settings size={20} /> : <Icons.LogIn size={20} />}
+                    </button>
+                </div>
+            )}
 
-            {/* Login Status Panel */}
+            {/* Login Status Panel - Show only if user is logged in */}
             {user && !isEditing && (
                 <div className="fixed bottom-4 right-20 z-50 bg-gray-800/90 backdrop-blur px-4 py-2 rounded-full border border-gray-700 flex items-center gap-3 animate-fade-in">
                     {user.photoURL && <img src={user.photoURL} alt="User" className="w-6 h-6 rounded-full border border-gray-500" />}
                     <span className="text-xs text-gray-300 hidden md:inline">Logged in as {user.displayName}</span>
                     
-                    {/* Share Button */}
-                    <button onClick={copyShareLink} className="text-gray-400 hover:text-blue-400 p-1 border-l border-gray-600 pl-2 ml-1 flex items-center gap-1" title="Copy Public Link">
-                        <Icons.Globe size={14} /> <span className="text-[10px] uppercase font-bold">Share</span>
-                    </button>
+                    {/* Share Button (Show only for Owner) */}
+                    {isOwner && (
+                        <button onClick={copyShareLink} className="text-gray-400 hover:text-blue-400 p-1 border-l border-gray-600 pl-2 ml-1 flex items-center gap-1" title="Copy Public Link">
+                            <Icons.Globe size={14} /> <span className="text-[10px] uppercase font-bold">Share</span>
+                        </button>
+                    )}
 
                     <button onClick={onLogout} className="text-gray-400 hover:text-red-400 p-1 border-l border-gray-600 pl-2" title="Logout"><Icons.LogOut size={14} /></button>
                 </div>
             )}
 
-            {/* Edit Actions Panel */}
-            {isEditing && (
+            {/* Edit Actions Panel - Protected by isOwner implicitly via showAuthButton logic but good to double check */}
+            {isEditing && isOwner && (
                 <div className="fixed bottom-16 right-4 z-50 bg-gray-800 p-4 rounded-xl shadow-xl border border-orange-500/50 flex flex-col gap-2 animate-fade-in-up">
                     <div className="text-orange-500 font-bold mb-2 text-center text-sm">ADMIN MODE</div>
                     <button onClick={onSave} className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-sm"><Icons.Save size={16} /> Save to Cloud</button>
