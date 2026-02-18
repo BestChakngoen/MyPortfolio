@@ -1,10 +1,8 @@
 const { useState, useEffect, useCallback } = React;
 
-// Navbar Component
+// Navbar Component (Keep existing code structure)
 const NavBar = ({ titles, activeSection, scrollToSection, isMenuOpen, setIsMenuOpen, Icons }) => {
-    // Safety check for titles
     const safeTitles = titles || {};
-    // Safety check for Icons
     const MenuIcon = Icons && Icons.Menu ? Icons.Menu : () => <span>Menu</span>;
     const XIcon = Icons && Icons.X ? Icons.X : () => <span>X</span>;
     
@@ -46,22 +44,14 @@ const NavBar = ({ titles, activeSection, scrollToSection, isMenuOpen, setIsMenuO
 const Portfolio = () => {
     const modules = window.PortfolioApp || {};
     
-    // --- ROBUST DESTRUCTURING WITH FALLBACKS ---
     const { 
         portfolioService, 
         Icons = window.PortfolioApp.Icons || {}, 
         firebaseApp
     } = modules;
 
-    // Placeholder Component
-    const ErrorComponent = ({ name }) => (
-        <div className="py-20 bg-gray-900 text-center border-b border-gray-800">
-            <p className="text-red-500 font-bold">Error: {name} failed to load.</p>
-            <p className="text-gray-500 text-sm">Check console for network errors.</p>
-        </div>
-    );
-
-    // Default Components
+    // Default Components & Placeholders
+    const ErrorComponent = ({ name }) => <div className="py-10 text-center text-red-500">Error loading {name}</div>;
     const HeroSection = modules.HeroSection || (() => <ErrorComponent name="HeroSection" />);
     const AboutSection = modules.AboutSection || (() => <ErrorComponent name="AboutSection" />);
     const SkillsSection = modules.SkillsSection || (() => <ErrorComponent name="SkillsSection" />);
@@ -71,12 +61,11 @@ const Portfolio = () => {
     const Lightbox = modules.Lightbox || (() => null);
     const AdminControls = modules.AdminControls || (() => null);
 
-    // Initial Data
     const SAFE_INITIAL_DATA = window.PortfolioApp.DEFAULT_DATA || {
         personalInfo: {}, titles: {}, projects: [], skillCategories: []
     };
 
-    // State Management
+    // State
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [activeSection, setActiveSection] = useState('home');
     const [isEditing, setIsEditing] = useState(false);
@@ -85,33 +74,74 @@ const Portfolio = () => {
     const [data, setData] = useState(SAFE_INITIAL_DATA);
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
-    
-    // --- SECRET ADMIN STATE ---
     const [showAdminUI, setShowAdminUI] = useState(false);
+    
+    // New State for View Mode
+    const [targetUid, setTargetUid] = useState(null); // UID of the portfolio we are viewing
+    const [isOwner, setIsOwner] = useState(false); // Are we the owner of this portfolio?
 
-    // 1. Initialize Firebase & Auth Listener
+    // 1. Check URL for ?uid=... (Public View Logic)
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const uidParam = params.get('uid');
+        if (uidParam) {
+            setTargetUid(uidParam);
+        }
+    }, []);
+
+    // 2. Initialize Firebase & Auth Logic
     useEffect(() => {
         if (firebaseApp && portfolioService) {
             portfolioService.initFirebase(firebaseApp);
+            
+            // Start listening to Auth
             const unsubscribe = firebaseApp.onAuthStateChanged(firebaseApp.auth, async (currentUser) => {
                 setUser(currentUser);
                 setLoading(true);
+
+                // Determine whose data to load
+                let uidToLoad = targetUid;
+
+                // If no URL uid, but user logged in, load user's own data
+                if (!uidToLoad && currentUser) {
+                    uidToLoad = currentUser.uid;
+                    // Optional: Don't auto-set targetUid here to keep URL clean for owner
+                }
+
+                // Load Data
                 try {
-                    const loadedData = await portfolioService.loadData(currentUser ? currentUser.uid : null);
+                    console.log("Loading data for UID:", uidToLoad || "Default");
+                    const loadedData = await portfolioService.loadData(uidToLoad);
                     setData(loadedData || SAFE_INITIAL_DATA);
                 } catch (err) {
                     console.error("Data load failed:", err);
                     setData(SAFE_INITIAL_DATA);
                 }
+                
                 setLoading(false);
             });
             return () => unsubscribe();
         } else {
             setLoading(false);
         }
-    }, [firebaseApp, portfolioService]);
+    }, [firebaseApp, portfolioService, targetUid]); // Re-run if targetUid changes (e.g. navigation)
 
-    // 2. Scroll Logic
+    // 3. Determine Ownership (Can I edit?)
+    useEffect(() => {
+        if (user && targetUid) {
+            // Viewing specific page + Logged in -> Check match
+            setIsOwner(user.uid === targetUid);
+        } else if (user && !targetUid) {
+            // Viewing home (no param) + Logged in -> Owner (Edit Self)
+            setIsOwner(true);
+        } else {
+            // Not logged in -> Visitor
+            setIsOwner(false);
+        }
+    }, [user, targetUid]);
+
+
+    // Scroll & Key Listeners
     useEffect(() => {
         const handleScroll = () => {
             const sections = ['home', 'about', 'skills', 'projects', 'contact'];
@@ -123,25 +153,21 @@ const Portfolio = () => {
                 }
             }
         };
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
-
-    // 3. Secret Key Listener (Ctrl + Shift + L)
-    useEffect(() => {
         const handleKeyDown = (e) => {
-            // ตรวจสอบการกดปุ่ม Ctrl + Shift + L
             if (e.ctrlKey && e.shiftKey && (e.key === 'L' || e.key === 'l')) {
                 e.preventDefault();
                 setShowAdminUI(prev => !prev);
-                console.log("Admin UI Visibility Toggled");
             }
         };
+        window.addEventListener('scroll', handleScroll);
         window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+            window.removeEventListener('keydown', handleKeyDown);
+        };
     }, []);
 
-    // 4. Handlers
+    // Handlers
     const scrollToSection = (id) => {
         const element = document.getElementById(id);
         if (element) {
@@ -152,20 +178,22 @@ const Portfolio = () => {
     };
 
     const handleDataChange = useCallback((path, value) => {
-        if (portfolioService) {
+        if (portfolioService && isOwner) { // Security check
             setData(prev => portfolioService.updateField(prev, path, value));
         }
-    }, [portfolioService]);
+    }, [portfolioService, isOwner]);
 
     const handleSave = async () => {
         if (!user) return alert("Please login first.");
         if (portfolioService) {
-            const success = await portfolioService.saveData(data, user.uid);
+            // If viewing shared link but owned, save to that ID. If local, save to user.uid
+            const saveId = targetUid || user.uid; 
+            const success = await portfolioService.saveData(data, saveId);
             if (success) {
                 setIsEditing(false);
-                alert("บันทึกข้อมูลลง Cloud เรียบร้อยแล้ว!");
+                alert("บันทึกข้อมูลสำเร็จ!");
             } else {
-                alert("เกิดข้อผิดพลาดในการบันทึก");
+                alert("บันทึกไม่สำเร็จ");
             }
         }
     };
@@ -174,7 +202,8 @@ const Portfolio = () => {
         setIsEditing(false);
         if (portfolioService) {
             setLoading(true);
-            const originalData = await portfolioService.loadData(user ? user.uid : null);
+            const uidToLoad = targetUid || (user ? user.uid : null);
+            const originalData = await portfolioService.loadData(uidToLoad);
             setData(originalData);
             setLoading(false);
         }
@@ -185,11 +214,7 @@ const Portfolio = () => {
             try {
                 await portfolioService.login();
             } catch (e) {
-                if (e.code === 'auth/unauthorized-domain' || e.message.includes('unauthorized-domain')) {
-                    alert("Login Failed: Domain not authorized.\n\nPlease go to Firebase Console > Authentication > Settings > Authorized Domains\nand add '127.0.0.1' to the list.");
-                } else {
-                    alert("Login Failed: " + e.message);
-                }
+                console.error(e);
             }
         }
     };
@@ -198,51 +223,51 @@ const Portfolio = () => {
         if (portfolioService) {
             await portfolioService.logout();
             setIsEditing(false);
-            setShowAdminUI(false); // Hide UI after logout
+            setShowAdminUI(false);
+            // If we were viewing "my" page without UID, we might want to reload defaults, 
+            // but the Auth listener will handle reloading data for null user.
         }
     };
 
     const handleImageUpload = (e, path) => {
-        if (portfolioService) {
+        if (portfolioService && isOwner) {
             portfolioService.processFile(e.target.files[0], (result) => {
                 handleDataChange(path, result);
             });
         }
     };
 
-    const handleAddGalleryImage = (e, projectIndex) => {
-        if (portfolioService) {
-            portfolioService.processFile(e.target.files[0], (result) => {
-                const newProjects = [...data.projects];
-                if (!newProjects[projectIndex].gallery) newProjects[projectIndex].gallery = [];
-                newProjects[projectIndex].gallery.push({ type: 'image', src: result, id: Date.now() });
-                handleDataChange(['projects'], newProjects);
-            });
-        }
+    // ... Gallery Handlers (Pass isOwner check implicitly by UI hiding) ...
+    const handleAddGalleryImage = (e, idx) => {
+        if(!isOwner) return;
+        portfolioService.processFile(e.target.files[0], (res) => {
+            const newProjs = [...data.projects];
+            if (!newProjs[idx].gallery) newProjs[idx].gallery = [];
+            newProjs[idx].gallery.push({ type: 'image', src: res, id: Date.now() });
+            handleDataChange(['projects'], newProjs);
+        });
     };
-
-    const handleAddGalleryVideo = (projectIndex) => {
-        const url = prompt("Please enter the Video URL:", "");
+    
+    const handleAddGalleryVideo = (idx) => {
+        if(!isOwner) return;
+        const url = prompt("Video URL:");
         if (url) {
-            const newProjects = [...data.projects];
-            if (!newProjects[projectIndex].gallery) newProjects[projectIndex].gallery = [];
-            newProjects[projectIndex].gallery.push({ type: 'video', src: url, id: Date.now() });
-            handleDataChange(['projects'], newProjects);
+            const newProjs = [...data.projects];
+            if (!newProjs[idx].gallery) newProjs[idx].gallery = [];
+            newProjs[idx].gallery.push({ type: 'video', src: url, id: Date.now() });
+            handleDataChange(['projects'], newProjs);
         }
     };
 
-    const handleRemoveGalleryItem = (projectIndex, itemIndex) => {
-        const newProjects = [...data.projects];
-        newProjects[projectIndex].gallery.splice(itemIndex, 1);
-        handleDataChange(['projects'], newProjects);
+    const handleRemoveGalleryItem = (pIdx, iIdx) => {
+        if(!isOwner) return;
+        const newProjs = [...data.projects];
+        newProjs[pIdx].gallery.splice(iIdx, 1);
+        handleDataChange(['projects'], newProjs);
     };
 
     if (loading) {
         return <div className="min-h-screen bg-gray-900 flex items-center justify-center text-white"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div></div>;
-    }
-
-    if (!data || !data.titles) {
-        return <div className="min-h-screen bg-gray-900 flex items-center justify-center text-red-500">Error: Data structure missing.</div>;
     }
 
     return (
@@ -256,9 +281,10 @@ const Portfolio = () => {
                 Icons={Icons}
             />
 
+            {/* Pass isEditing ONLY if isOwner is true */}
             <HeroSection 
                 personalInfo={data.personalInfo} 
-                isEditing={isEditing} 
+                isEditing={isEditing && isOwner} 
                 onUpdate={handleDataChange} 
                 onImageUpload={handleImageUpload}
                 scrollToSection={scrollToSection}
@@ -266,21 +292,21 @@ const Portfolio = () => {
 
             <AboutSection 
                 titles={data.titles} 
-                isEditing={isEditing} 
+                isEditing={isEditing && isOwner} 
                 onUpdate={handleDataChange} 
             />
 
             <SkillsSection 
                 titles={data.titles} 
                 skillCategories={data.skillCategories} 
-                isEditing={isEditing} 
+                isEditing={isEditing && isOwner} 
                 onUpdate={handleDataChange} 
             />
 
             <ProjectsSection 
                 titles={data.titles} 
                 projects={data.projects} 
-                isEditing={isEditing} 
+                isEditing={isEditing && isOwner} 
                 onUpdate={handleDataChange}
                 setPlayingProject={setPlayingProject}
                 setViewingMedia={setViewingMedia}
@@ -292,7 +318,7 @@ const Portfolio = () => {
             <ContactSection 
                 titles={data.titles} 
                 personalInfo={data.personalInfo} 
-                isEditing={isEditing} 
+                isEditing={isEditing && isOwner} 
                 onUpdate={handleDataChange} 
             />
 
@@ -302,8 +328,12 @@ const Portfolio = () => {
                 </div>
             </footer>
 
-            {/* Secret Admin Controls: แสดงก็ต่อเมื่อ Login แล้ว หรือกด Ctrl+Shift+L */}
-            {(user || showAdminUI) && (
+            {/* Admin Controls Logic:
+                1. If I am the Owner (isOwner = true), show controls.
+                2. If I am a Visitor (isOwner = false), HIDE controls completely (Public View).
+                3. Exception: If user is not logged in at all and not viewing a specific UID, show Login button (Default/Demo mode).
+            */}
+            {(isOwner || (!targetUid && !user)) && (
                 <AdminControls 
                     isEditing={isEditing} 
                     setIsEditing={setIsEditing} 
@@ -312,6 +342,7 @@ const Portfolio = () => {
                     user={user}
                     onLogin={handleLogin}
                     onLogout={handleLogout}
+                    isOwner={isOwner}
                 />
             )}
 
@@ -321,7 +352,6 @@ const Portfolio = () => {
     );
 };
 
-// Robust Root Creation
 const container = document.getElementById('root');
 if (container) {
     if (!container._reactRoot) {
