@@ -36,11 +36,13 @@ window.PortfolioApp.HeroSection = ({ personalInfo, isEditing, onUpdate, onImageU
                             <div className="flex flex-col items-center text-gray-500"><Icons.User size={80} className="mb-2 opacity-50"/><span className="text-xs">รูปโปรไฟล์ของคุณ</span></div>
                         )}
                         {isEditing && (
-                            <label className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center cursor-pointer hover:bg-black/70 transition-colors rounded-full z-10">
+                            <button onClick={() => {
+                                const url = prompt("กรุณาวางลิงก์รูปภาพโปรไฟล์ (Image URL) จาก GitHub หรือเว็บฝากรูป:");
+                                if (url) onUpdate(['personalInfo', 'profileImage'], url);
+                            }} className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center cursor-pointer hover:bg-black/70 transition-colors rounded-full z-10 w-full h-full border-none">
                                 <Icons.Upload className="text-orange-500 mb-2" />
-                                <span className="text-xs text-white">Change Photo</span>
-                                <input type="file" accept="image/*" className="hidden" onChange={(e) => onImageUpload(e, ['personalInfo', 'profileImage'])} />
-                            </label>
+                                <span className="text-xs text-white">Paste Image URL</span>
+                            </button>
                         )}
                     </div>
                 </div>

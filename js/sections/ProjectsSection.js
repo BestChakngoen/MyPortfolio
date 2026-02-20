@@ -14,19 +14,16 @@ const ProjectCard = ({ project, index, isEditing, onUpdate, setPlayingProject, s
                 {!project.image && <div className="text-center p-4"><h3 className="text-3xl font-black text-white/20 uppercase tracking-widest">{project.title}</h3></div>}
                 <div className={`absolute inset-0 bg-black/20 ${!isEditing && 'group-hover:bg-transparent'} transition-colors duration-300`}></div>
                 {isEditing && (
-                    <label className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center cursor-pointer hover:bg-black/70 transition-colors z-10">
-                        <Icons.Upload className="text-orange-500 mb-2" /><span className="text-xs text-white">Upload Screenshot</span>
-                        <input type="file" accept="image/*" className="hidden" onChange={(e) => {
-                            const file = e.target.files[0];
-                            if (file) {
-                                const reader = new FileReader();
-                                reader.onloadend = () => {
-                                    const newProjects = [...allProjects]; newProjects[index].image = reader.result; onUpdate(['projects'], newProjects);
-                                };
-                                reader.readAsDataURL(file);
-                            }
-                        }} />
-                    </label>
+                    <button onClick={() => {
+                        const url = prompt("กรุณาวางลิงก์รูปภาพปกโปรเจกต์ (Image URL):");
+                        if (url) {
+                            const newProjects = [...allProjects]; 
+                            newProjects[index].image = url; 
+                            onUpdate(['projects'], newProjects);
+                        }
+                    }} className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center cursor-pointer hover:bg-black/70 transition-colors z-10 w-full h-full border-none">
+                        <Icons.Upload className="text-orange-500 mb-2" /><span className="text-xs text-white">Paste Image URL</span>
+                    </button>
                 )}
             </div>
             <div className="p-8 flex flex-col flex-grow">
@@ -56,7 +53,24 @@ const ProjectCard = ({ project, index, isEditing, onUpdate, setPlayingProject, s
                             </div>
                         ))}
                     </div>
-                    {isEditing && <div className="flex gap-2"><label className="cursor-pointer px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-xs text-white flex items-center gap-1 border border-gray-600"><Icons.Image size={12} /> Add Image<input type="file" accept="image/*" className="hidden" onChange={(e) => handleAddGalleryImage(e, index)} /></label><button onClick={() => handleAddGalleryVideo(index)} className="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-xs text-white flex items-center gap-1 border border-gray-600"><Icons.Video size={12} /> Add Video URL</button></div>}
+                    {isEditing && (
+                        <div className="flex gap-2">
+                            <button onClick={() => {
+                                const url = prompt("กรุณาวางลิงก์รูปภาพแกลลอรี่ (Image URL):");
+                                if (url) {
+                                    const newProjects = [...allProjects];
+                                    if (!newProjects[index].gallery) newProjects[index].gallery = [];
+                                    newProjects[index].gallery.push({ type: 'image', src: url, id: Date.now() });
+                                    onUpdate(['projects'], newProjects);
+                                }
+                            }} className="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-xs text-white flex items-center gap-1 border border-gray-600">
+                                <Icons.Image size={12} /> Add Image URL
+                            </button>
+                            <button onClick={() => handleAddGalleryVideo(index)} className="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-xs text-white flex items-center gap-1 border border-gray-600">
+                                <Icons.Video size={12} /> Add Video URL
+                            </button>
+                        </div>
+                    )}
                 </div>
                 <div className="flex gap-2">
                     <a href={project.link} target="_blank" rel="noreferrer" className="flex-1 py-3 bg-gray-800 hover:bg-gray-700 border border-gray-600 text-white text-center rounded-lg transition-colors duration-300 font-medium flex items-center justify-center gap-2">Info <Icons.ExternalLink size={16} /></a>
