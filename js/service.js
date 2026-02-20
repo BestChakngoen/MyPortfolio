@@ -7,7 +7,7 @@ class PortfolioService {
     }
 
     /**
-     * รับ dependency injection ของ Firebase จากภายนอก (เพื่อให้ Test ง่ายและลด Coupling)
+     * รับ dependency injection ของ Firebase จากภายนอก
      */
     initFirebase(firebaseApp) {
         if (!firebaseApp) return;
@@ -61,20 +61,17 @@ class PortfolioService {
      * Load Data: Strategy Pattern
      */
     async loadData(userId = null) {
-        // Strategy 1: Public/Offline Mode
         if (!userId || !this.firebaseInitialized) {
             console.log("Loading Default Data (Offline/Public Mode)");
             return this.defaultData;
         }
 
-        // Strategy 2: Authenticated Cloud Mode
         try {
             const docRef = this.doc(this.db, "portfolios", userId);
             const docSnap = await this.getDoc(docRef);
 
             if (docSnap.exists()) {
                 console.log("Data loaded from Firebase Cloud");
-                // Merge with default to ensure structure exists (prevents undefined errors on new fields)
                 return { ...this.defaultData, ...docSnap.data() };
             } else {
                 console.warn("No cloud data found for user, using default.");
@@ -94,7 +91,12 @@ class PortfolioService {
         if (!this.firebaseInitialized) throw new Error("Firebase not initialized");
 
         try {
-            await this.setDoc(this.doc(this.db, "portfolios", userId), data);
+            // [แก้ไขเพื่อป้องกัน Error]
+            // ใช้ JSON.parse + JSON.stringify เพื่อล้างข้อมูลที่ไม่ใช่ JSON มาตรฐาน
+            // เป็นการกำจัดพวกค่า undefined, ฟังก์ชันแฝง, หรือ Proxy Object ที่ทำให้ Firebase แจ้ง invalid nested entity 
+            const cleanData = JSON.parse(JSON.stringify(data));
+            
+            await this.setDoc(this.doc(this.db, "portfolios", userId), cleanData);
             return true;
         } catch (e) {
             console.error("Save Error:", e);
