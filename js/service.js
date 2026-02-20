@@ -84,42 +84,6 @@ class PortfolioService {
     }
 
     /**
-     * คัดกรองและแก้ปัญหา Nested Arrays เพื่อให้ผ่านมาตรฐาน Firestore
-     */
-    sanitizeForFirestore(obj, insideArray = false) {
-        if (obj === null || obj === undefined) return null;
-        
-        // จัดการกรณีเป็น Array
-        if (Array.isArray(obj)) {
-            if (insideArray) {
-                // หากเจอ Array ซ้อนอยู่ใน Array Firestore จะแจ้ง invalid nested entity ทันที
-                // เราจึงแปลงเป็น Object แบบระบุ Index {0: val, 1: val} เพื่อให้บันทึกผ่าน
-                const safeObject = {};
-                obj.forEach((val, idx) => {
-                    safeObject[idx] = this.sanitizeForFirestore(val, true);
-                });
-                return safeObject;
-            }
-            // ระบุสถานะว่าลูปนี้กำลังทำงานอยู่ข้างใน Array
-            return obj.map(item => this.sanitizeForFirestore(item, true));
-        }
-        
-        // จัดการกรณีเป็น Object
-        if (typeof obj === 'object') {
-            const cleaned = {};
-            for (const [key, value] of Object.entries(obj)) {
-                if (value !== undefined) {
-                    // หากข้างใน Object มี Array ให้เริ่มนับสถานะ insideArray ใหม่ (เพราะ Firestore ยอมรับ Object ซ้อน Array ได้)
-                    cleaned[key] = this.sanitizeForFirestore(value, false);
-                }
-            }
-            return cleaned;
-        }
-        
-        return obj;
-    }
-
-    /**
      * Save Data
      */
     async saveData(data, userId) {
@@ -127,12 +91,10 @@ class PortfolioService {
         if (!this.firebaseInitialized) throw new Error("Firebase not initialized");
 
         try {
-            // [แก้ไขเพื่อป้องกัน Error แบบ 100%]
-            // 1. กรองให้เหลือแค่ JSON เพื่อตัดฟังก์ชัน หรือตัวแปรแปลกปลอม
-            const plainData = JSON.parse(JSON.stringify(data));
-            
-            // 2. ใช้ระบบ Sanitize เพื่อจัดการโครงสร้าง Array เจ้าปัญหา
-            const cleanData = this.sanitizeForFirestore(plainData);
+            // [แก้ไขเพื่อป้องกัน Error]
+            // ใช้ JSON.parse + JSON.stringify เพื่อล้างข้อมูลที่ไม่ใช่ JSON มาตรฐาน
+            // เป็นการกำจัดพวกค่า undefined, ฟังก์ชันแฝง, หรือ Proxy Object ที่ทำให้ Firebase แจ้ง invalid nested entity 
+            const cleanData = JSON.parse(JSON.stringify(data));
             
             await this.setDoc(this.doc(this.db, "portfolios", userId), cleanData);
             return true;
