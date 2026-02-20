@@ -8,7 +8,14 @@ window.PortfolioApp.ContactSection = ({ titles, personalInfo, isEditing, onUpdat
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12 relative z-10">
                     <div>
                         <h2 className="text-3xl font-bold text-white mb-6">ร่วมงานกับผม <br/><span className="text-orange-500"><EditableText value={titles.contact} onChange={(val) => onUpdate(['titles', 'contact'], val)} isEditing={isEditing} /></span></h2>
-                        <p className="text-gray-400 mb-8 text-lg">หากคุณกำลังมองหา Game Programmer ที่มีความมุ่งมั่น พร้อมเรียนรู้ และสามารถทำงานเป็นทีมได้ สามารถติดต่อผมได้ตามช่องทางด้านล่างครับ</p>
+                        <div className="text-gray-400 mb-8 text-lg">
+                            <EditableText 
+                                value={personalInfo?.contactDescription ?? "หากคุณกำลังมองหา Game Programmer ที่มีความมุ่งมั่น พร้อมเรียนรู้ และสามารถทำงานเป็นทีมได้ สามารถติดต่อผมได้ตามช่องทางด้านล่างครับ"} 
+                                onChange={(val) => onUpdate(['personalInfo', 'contactDescription'], val)} 
+                                isEditing={isEditing} 
+                                multiline={true} 
+                            />
+                        </div>
                         <div className="space-y-6">
                             <div className="flex items-center gap-4 group"><div className="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center group-hover:bg-orange-500 transition-colors duration-300"><Icons.Phone className="text-white" size={20} /></div><div><p className="text-gray-400 text-sm">เบอร์โทรศัพท์</p><p className="text-white font-medium text-lg"><EditableText value={personalInfo.phone} onChange={(val) => onUpdate(['personalInfo', 'phone'], val)} isEditing={isEditing} /></p></div></div>
                             <div className="flex items-center gap-4 group"><div className="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center group-hover:bg-orange-500 transition-colors duration-300"><Icons.Mail className="text-white" size={20} /></div><div><p className="text-gray-400 text-sm">อีเมล</p><div className="text-white font-medium text-lg"><EditableText value={personalInfo.email} onChange={(val) => onUpdate(['personalInfo', 'email'], val)} isEditing={isEditing} /></div></div></div>
