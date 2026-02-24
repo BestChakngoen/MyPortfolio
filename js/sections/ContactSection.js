@@ -34,7 +34,7 @@ window.PortfolioApp.ContactSection = ({ titles, personalInfo, isEditing, onUpdat
                             <a href={personalInfo?.instagram || "#"} target="_blank" rel="noreferrer" className="w-14 h-14 bg-pink-600 rounded-full flex items-center justify-center text-white hover:scale-110 transition-transform shadow-lg"><Icons.Instagram size={28} /></a>
                         </div>
                         
-                        {/* อัปเดต: เพิ่มช่องกรอก Facebook และ IG ในโหมด Edit */}
+                        {/* อัปเดต: เพิ่มช่องกรอก Facebook และ IG และ itch.io ในโหมด Edit */}
                         {isEditing && (
                             <div className="mt-6 w-full flex flex-col gap-3 p-4 bg-gray-800 rounded-xl border border-gray-700 shadow-inner">
                                 <div>
