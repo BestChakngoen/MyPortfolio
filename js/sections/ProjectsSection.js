@@ -45,10 +45,13 @@ const ProjectCard = ({ project, index, isEditing, onUpdate, setPlayingProject, s
                 {/* Gallery */}
                 <div className="mt-4 border-t border-gray-700 pt-4 mb-4">
                     {(isEditing || (project.gallery && project.gallery.length > 0)) && <h5 className="text-white text-sm font-semibold mb-2">Media Gallery</h5>}
-                    <div className="grid grid-cols-4 gap-2 mb-2">
+                    {/* Folio Update: เปลี่ยนเป็น grid-cols-1 เพื่อแสดง 1 รูปต่อแถว ทำให้รูปใหญ่เต็มตาที่สุด */}
+                    <div className="grid grid-cols-1 gap-4 mb-2">
                         {project.gallery && project.gallery.map((media, mIdx) => (
-                            <div key={mIdx} className="relative aspect-square bg-black rounded overflow-hidden cursor-pointer group/media border border-gray-700 hover:border-orange-500 transition-colors" onClick={() => setViewingMedia(media)}>
-                                {media.type === 'image' ? <img src={media.src} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center bg-gray-800 text-orange-500"><Icons.Play size={20} /></div>}
+                            // Folio Update: เปลี่ยนจาก aspect-square เป็น aspect-video เพื่อรองรับภาพแนวนอน
+                            <div key={mIdx} className="relative aspect-video bg-black rounded overflow-hidden cursor-pointer group/media border border-gray-700 hover:border-orange-500 transition-colors" onClick={() => setViewingMedia(media)}>
+                                {/* Folio Update: เปลี่ยนจาก object-cover เป็น object-contain เพื่อให้ภาพแสดงเต็มองค์ประกอบ ไม่ถูกตัด */}
+                                {media.type === 'image' ? <img src={media.src} className="w-full h-full object-contain" /> : <div className="w-full h-full flex items-center justify-center bg-gray-800 text-orange-500"><Icons.Play size={24} /></div>}
                                 {isEditing && <button onClick={(e) => { e.stopPropagation(); handleRemoveGalleryItem(index, mIdx); }} className="absolute top-0 right-0 bg-red-600 text-white p-1 hover:bg-red-700"><Icons.X size={10} /></button>}
                             </div>
                         ))}
