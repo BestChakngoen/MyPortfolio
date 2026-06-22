@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="flex-1 flex justify-center relative">
                             <div class="relative w-64 h-64 md:w-80 md:h-80 group">
                                 <div class="absolute inset-0 bg-gradient-to-tr from-orange-500 via-amber-500 to-purple-600 rounded-full blur-xl opacity-40 group-hover:opacity-60 transition-opacity duration-500"></div>
-                                <div class="absolute inset-1 bg-gray-950 rounded-full flex items-center justify-center overflow-hidden border-4 border-gray-800/80 shadow-2xl relative z-10" id="profile-img-container">
+                                <div class="absolute inset-1 bg-gray-950 rounded-full flex items-center justify-center overflow-hidden border-4 border-gray-800/80 shadow-2xl z-10" id="profile-img-container">
                                     ${data.personalInfo.profileImage ? `
                                         <img src="${data.personalInfo.profileImage}" alt="Profile" class="w-full h-full object-cover rounded-full" id="profile-image-view" />
                                     ` : `
@@ -108,40 +108,60 @@ document.addEventListener('DOMContentLoaded', () => {
                             </div>
                         </div>
                     </div>
-                    <div id="scroll-down-btn" class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce text-gray-600 cursor-pointer hidden md:block w-8 h-8">${Icons.ChevronDown}</div>
                 </section>
 
                 <!-- About Section -->
                 <section id="about" class="py-24 px-6 bg-gray-950 relative border-t border-gray-900">
-                    <div class="container mx-auto max-w-4xl">
+                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-orange-500/5 via-transparent to-transparent -z-10"></div>
+                    <div class="container mx-auto max-w-5xl">
                         <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-16 text-center relative after:content-[''] after:block after:w-12 after:h-1 after:bg-orange-500 after:mx-auto after:mt-4">
                             <span id="edit-title-about" data-editable>${data.titles.about || "เกี่ยวกับผม (Preface)"}</span>
                         </h2>
-                        <div class="grid md:grid-cols-2 gap-8 items-start">
-                            <div class="bg-gray-900/40 backdrop-blur border border-gray-800/80 p-8 rounded-2xl shadow-xl space-y-6">
-                                <h3 class="text-lg font-bold text-white flex items-center gap-2.5 border-b border-gray-800 pb-4">
-                                    <div class="w-5 h-5 text-orange-500">${Icons.User}</div>
-                                    ข้อมูลส่วนตัว
-                                </h3>
-                                <ul class="space-y-4 text-sm font-medium">
-                                    <li class="flex justify-between border-b border-gray-800/30 pb-3">
-                                        <span class="text-gray-400 font-light">ชื่อเล่น:</span>
-                                        <span id="edit-nickname" class="text-white" data-editable>${data.personalInfo.nickname || "Best"}</span>
-                                    </li>
-                                    <li class="flex justify-between border-b border-gray-800/30 pb-3">
-                                        <span class="text-gray-400 font-light">ที่อยู่:</span>
-                                        <span id="edit-address" class="text-white text-right max-w-[220px]" data-editable>${data.personalInfo.address || "-"}</span>
-                                    </li>
-                                </ul>
+                        
+                        <div class="grid md:grid-cols-2 gap-8 items-stretch">
+                            <!-- Left Card: Personal Info -->
+                            <div class="bg-gray-900/40 backdrop-blur border border-gray-800/80 p-8 rounded-2xl shadow-xl flex flex-col justify-between space-y-6 hover:border-orange-500/20 transition-all duration-300">
+                                <div>
+                                    <h3 class="text-lg font-bold text-white flex items-center gap-2.5 border-b border-gray-800 pb-4 mb-6">
+                                        <div class="w-5 h-5 text-orange-500">${Icons.User}</div>
+                                        ข้อมูลส่วนตัว
+                                    </h3>
+                                    <ul class="space-y-4 text-sm font-medium">
+                                        <li class="flex items-center justify-between border-b border-gray-800/30 pb-3">
+                                            <span class="text-gray-400 font-light flex items-center gap-2">
+                                                <span class="w-1.5 h-1.5 bg-orange-500 rounded-full"></span>ชื่อจริง:
+                                            </span>
+                                            <span class="text-white text-right font-medium flex items-center gap-1">
+                                                <span id="edit-info-name" class="hover:bg-gray-850 px-2 py-0.5 rounded cursor-text" data-editable>${data.personalInfo.name || "ปฏิภาณ จักรเงิน"}</span>
+                                            </span>
+                                        </li>
+                                        <li class="flex items-center justify-between border-b border-gray-800/30 pb-3">
+                                            <span class="text-gray-400 font-light flex items-center gap-2">
+                                                <span class="w-1.5 h-1.5 bg-orange-500 rounded-full"></span>ชื่อเล่น:
+                                            </span>
+                                            <span id="edit-nickname" class="text-white hover:bg-gray-850 px-2 py-0.5 rounded cursor-text" data-editable>${data.personalInfo.nickname || "Best"}</span>
+                                        </li>
+                                        <li class="flex items-center justify-between border-b border-gray-800/30 pb-3">
+                                            <span class="text-gray-400 font-light flex items-center gap-2">
+                                                <span class="w-1.5 h-1.5 bg-orange-500 rounded-full"></span>ที่อยู่:
+                                            </span>
+                                            <span id="edit-address" class="text-white text-right max-w-[240px] hover:bg-gray-850 px-2 py-0.5 rounded cursor-text" data-editable>${data.personalInfo.address || "-"}</span>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
-                            <div class="bg-gray-900/40 backdrop-blur border border-gray-800/80 p-8 rounded-2xl shadow-xl space-y-6">
-                                <h3 class="text-lg font-bold text-white flex items-center gap-2.5 border-b border-gray-800 pb-4">
-                                    <div class="w-5 h-5 text-orange-500">${Icons.BookOpen}</div>
-                                    จุดมุ่งหมายและการทำงาน
-                                </h3>
-                                <p id="edit-about-desc" class="text-gray-300 leading-relaxed text-sm font-light" data-editable>
-                                    ${data.personalInfo.aboutDesc || "ผมตั้งใจที่จะพัฒนาทักษะด้าน Game Programming ให้เชี่ยวชาญยิ่งขึ้น โดยมีความตั้งใจในการร่วมออกแบบและพัฒนา Core Mechanics ที่ตอบสนองความต้องการของผู้เล่นได้อย่างยอดเยี่ยม และมุ่งหวังที่จะนำทักษะด้าน OOP, Data Structures และ Game Logic มาสร้างประสบการณ์ความสนุกแปลกใหม่ในผลงานทุกชิ้น"}
-                                </p>
+                            
+                            <!-- Right Card: Preface / Goals -->
+                            <div class="bg-gray-900/40 backdrop-blur border border-gray-800/80 p-8 rounded-2xl shadow-xl flex flex-col justify-between space-y-6 hover:border-orange-500/20 transition-all duration-300">
+                                <div>
+                                    <h3 class="text-lg font-bold text-white flex items-center gap-2.5 border-b border-gray-800 pb-4 mb-6">
+                                        <div class="w-5 h-5 text-orange-500">${Icons.BookOpen}</div>
+                                        จุดมุ่งหมายและการทำงาน
+                                    </h3>
+                                    <p id="edit-about-desc" class="text-gray-300 leading-relaxed text-sm font-light min-h-[180px] pl-1" data-editable>
+                                        ${data.personalInfo.aboutDesc || "ผมตั้งใจที่จะพัฒนาทักษะด้าน Game Programming ให้เชี่ยวชาญยิ่งขึ้น โดยมีความตั้งใจในการร่วมออกแบบและพัฒนา Core Mechanics ที่ตอบสนองความต้องการของผู้เล่นได้อย่างยอดเยี่ยม และมุ่งหวังที่จะนำทักษะด้าน OOP, Data Structures และ Game Logic มาสร้างประสบการณ์ความสนุกแปลกใหม่ในผลงานทุกชิ้น"}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -159,11 +179,12 @@ document.addEventListener('DOMContentLoaded', () => {
                                 return `
                                     <div class="skill-card bg-gray-950/60 border border-gray-900 p-6 rounded-2xl shadow-lg hover:border-orange-500/20 hover:shadow-orange-500/5 transition-all duration-300 relative" data-icon-type="${category.iconType}">
                                         <button class="edit-control absolute top-2 right-2 bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white rounded p-1 cursor-pointer delete-skill-category-btn" title="Delete Category" style="font-size: 10px;">×</button>
-                                        <div class="flex items-center gap-3.5 mb-6 border-b border-gray-900 pb-4">
-                                            <div class="p-2.5 bg-orange-500/10 rounded-xl text-orange-500 w-10 h-10 flex items-center justify-center">
+                                        <div class="flex items-center gap-3.5 mb-6 border-b border-gray-900 pb-4 relative">
+                                            <div class="p-2.5 bg-orange-500/10 rounded-xl text-orange-500 w-10 h-10 flex items-center justify-center skill-category-icon-container">
                                                 ${categoryIcon}
                                             </div>
                                             <h3 class="skill-category-title text-base font-bold text-white tracking-wide" data-editable>${category.title}</h3>
+                                            <button class="edit-control ml-2.5 bg-gray-900 hover:bg-orange-600 text-white border border-gray-700 text-[9px] font-bold px-2 py-0.5 rounded shadow cursor-pointer change-category-icon-btn">Edit Icon</button>
                                         </div>
                                         <div class="flex flex-wrap gap-2 skill-tags-container">
                                             ${category.items.map(skill => `
@@ -213,9 +234,10 @@ document.addEventListener('DOMContentLoaded', () => {
                                             ` : ''}
                                         </div>
                                         <!-- Edit Project Image/Link controls -->
-                                        <div class="edit-control absolute top-2 right-2 flex gap-1.5 z-20">
-                                            <button class="bg-gray-900/90 hover:bg-orange-600 text-white border border-gray-700 text-[10px] font-bold px-2.5 py-1 rounded shadow cursor-pointer change-project-img-btn">Img</button>
-                                            <button class="bg-gray-900/90 hover:bg-orange-600 text-white border border-gray-700 text-[10px] font-bold px-2.5 py-1 rounded shadow cursor-pointer change-project-link-btn">Link</button>
+                                        <div class="edit-control absolute top-2 right-2 flex gap-1 z-20">
+                                            <button class="bg-gray-900/90 hover:bg-orange-600 text-white border border-gray-700 text-[9px] font-bold px-1.5 py-0.5 rounded shadow cursor-pointer change-project-img-btn" title="Edit Image URL">Img</button>
+                                            <button class="bg-gray-900/90 hover:bg-orange-600 text-white border border-gray-700 text-[9px] font-bold px-1.5 py-0.5 rounded shadow cursor-pointer change-project-link-btn" title="Edit Project Link">Link</button>
+                                            <button class="bg-gray-900/90 hover:bg-orange-600 text-white border border-gray-700 text-[9px] font-bold px-1.5 py-0.5 rounded shadow cursor-pointer change-project-video-btn" title="Edit Video Link">Video</button>
                                         </div>
                                     </div>
                                     <div class="p-6 flex-1 flex flex-col justify-between space-y-5">
@@ -238,6 +260,8 @@ document.addEventListener('DOMContentLoaded', () => {
                                                     <button class="edit-control px-2 py-0.5 bg-orange-500/20 hover:bg-orange-500 text-orange-400 hover:text-white border border-orange-500/30 text-[10px] font-bold rounded cursor-pointer add-responsibility-btn">+ Add</button>
                                                 </ul>
                                             </div>
+                                            <!-- Video Demo Player -->
+                                            ${renderVideoPlayer(project.embedUrl)}
                                         </div>
                                         ${project.link && project.link !== "#" ? `
                                             <a href="${project.link}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-2 w-full py-2.5 bg-gray-950/60 hover:bg-orange-500 text-orange-400 hover:text-white border border-orange-500/20 hover:border-orange-500 font-bold rounded-xl transition-all duration-300 text-xs">
@@ -266,29 +290,47 @@ document.addEventListener('DOMContentLoaded', () => {
                         <p class="text-gray-400 mb-16 max-w-lg mx-auto text-sm font-light">
                             ยินดีพูดคุยและร่วมงานด้วยเสมอ สามารถติดต่อผมได้ตามช่องทางต่างๆ ด้านล่างนี้ครับ
                         </p>
-                        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
-                            <a href="mailto:${data.personalInfo.email}" class="bg-gray-950 border border-gray-900/60 p-6 rounded-2xl flex items-center gap-4 hover:border-orange-500/20 transition-all duration-300 shadow-md">
-                                <div class="p-3 bg-orange-500/10 text-orange-500 rounded-xl w-11 h-11 flex items-center justify-center">${Icons.Mail}</div>
-                                <div>
+                        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 text-left" id="contact-cards-container">
+                            <div id="contact-email-card" class="bg-gray-950 border border-gray-900/60 p-6 rounded-2xl flex items-center gap-4 hover:border-orange-500/20 transition-all duration-300 shadow-md relative" data-icon-type="${data.personalInfo.emailIcon || 'Mail'}">
+                                <div class="p-3 bg-orange-500/10 text-orange-500 rounded-xl w-11 h-11 flex items-center justify-center flex-shrink-0 contact-icon-container">
+                                    ${Icons[data.personalInfo.emailIcon || 'Mail'] || Icons.Mail}
+                                </div>
+                                <div class="overflow-hidden">
                                     <span class="text-xs text-gray-500 uppercase font-bold tracking-wider">Email</span>
-                                    <p id="edit-email" class="text-sm font-semibold text-white break-all" data-editable>${data.personalInfo.email}</p>
+                                    <a href="mailto:${data.personalInfo.email || ''}" class="text-sm font-semibold text-white break-all hover:text-orange-400 transition-colors" id="contact-email-link" target="_blank">${data.personalInfo.email || ''}</a>
                                 </div>
-                            </a>
-                            <a href="tel:${data.personalInfo.phone}" class="bg-gray-950 border border-gray-900/60 p-6 rounded-2xl flex items-center gap-4 hover:border-orange-500/20 transition-all duration-300 shadow-md">
-                                <div class="p-3 bg-orange-500/10 text-orange-500 rounded-xl w-11 h-11 flex items-center justify-center">${Icons.Phone}</div>
-                                <div>
+                                <div class="edit-control absolute top-2 right-2 flex gap-1 z-20">
+                                    <button class="bg-gray-900/90 hover:bg-orange-600 text-white border border-gray-700 text-[10px] font-bold px-2 py-0.5 rounded shadow cursor-pointer change-contact-icon-btn" data-contact-type="email">Icon</button>
+                                    <button class="bg-gray-900/90 hover:bg-orange-600 text-white border border-gray-700 text-[10px] font-bold px-2 py-0.5 rounded shadow cursor-pointer change-contact-email-btn">Edit</button>
+                                </div>
+                            </div>
+                            <div id="contact-phone-card" class="bg-gray-950 border border-gray-900/60 p-6 rounded-2xl flex items-center gap-4 hover:border-orange-500/20 transition-all duration-300 shadow-md relative" data-icon-type="${data.personalInfo.phoneIcon || 'Phone'}">
+                                <div class="p-3 bg-orange-500/10 text-orange-500 rounded-xl w-11 h-11 flex items-center justify-center flex-shrink-0 contact-icon-container">
+                                    ${Icons[data.personalInfo.phoneIcon || 'Phone'] || Icons.Phone}
+                                </div>
+                                <div class="overflow-hidden">
                                     <span class="text-xs text-gray-500 uppercase font-bold tracking-wider">Phone</span>
-                                    <p id="edit-phone" class="text-sm font-semibold text-white" data-editable>${data.personalInfo.phone}</p>
+                                    <a href="tel:${data.personalInfo.phone || ''}" class="text-sm font-semibold text-white hover:text-orange-400 transition-colors" id="contact-phone-link">${data.personalInfo.phone || ''}</a>
                                 </div>
-                            </a>
-                            ${data.personalInfo.line ? `
-                                <a href="${data.personalInfo.line}" target="_blank" rel="noopener noreferrer" class="bg-gray-950 border border-gray-900/60 p-6 rounded-2xl flex items-center gap-4 hover:border-orange-500/20 transition-all duration-300 shadow-md" id="edit-line-url">
-                                    <div class="p-3 bg-orange-500/10 text-orange-500 rounded-xl w-11 h-11 flex items-center justify-center">${Icons.ExternalLink}</div>
-                                    <div>
-                                        <span class="text-xs text-gray-500 uppercase font-bold tracking-wider">Line</span>
-                                        <p id="edit-line" class="text-sm font-semibold text-white" data-editable>แอดไลน์ที่นี่</p>
+                                <div class="edit-control absolute top-2 right-2 flex gap-1 z-20">
+                                    <button class="bg-gray-900/90 hover:bg-orange-600 text-white border border-gray-700 text-[10px] font-bold px-2 py-0.5 rounded shadow cursor-pointer change-contact-icon-btn" data-contact-type="phone">Icon</button>
+                                    <button class="bg-gray-900/90 hover:bg-orange-600 text-white border border-gray-700 text-[10px] font-bold px-2 py-0.5 rounded shadow cursor-pointer change-contact-phone-btn">Edit</button>
+                                </div>
+                            </div>
+                            ${(data.personalInfo.line || document.body.classList.contains('edit-mode-active')) ? `
+                                <div id="contact-line-card" class="bg-gray-950 border border-gray-900/60 p-6 rounded-2xl flex items-center gap-4 hover:border-orange-500/20 transition-all duration-300 shadow-md relative" data-icon-type="${data.personalInfo.lineIcon || 'Line'}">
+                                    <div class="p-3 bg-orange-500/10 text-orange-500 rounded-xl w-11 h-11 flex items-center justify-center flex-shrink-0 contact-icon-container">
+                                        ${Icons[data.personalInfo.lineIcon || 'Line'] || Icons.Line}
                                     </div>
-                                </a>
+                                    <div class="overflow-hidden">
+                                        <span class="text-xs text-gray-500 uppercase font-bold tracking-wider">Line</span>
+                                        <a href="${data.personalInfo.line || '#'}" target="_blank" rel="noopener noreferrer" class="text-sm font-semibold text-white hover:text-orange-400 transition-colors" id="contact-line-link">${data.personalInfo.lineText || "แอดไลน์ที่นี่"}</a>
+                                    </div>
+                                    <div class="edit-control absolute top-2 right-2 flex gap-1 z-20">
+                                        <button class="bg-gray-900/90 hover:bg-orange-600 text-white border border-gray-700 text-[10px] font-bold px-2 py-0.5 rounded shadow cursor-pointer change-contact-icon-btn" data-contact-type="line">Icon</button>
+                                        <button class="bg-gray-900/90 hover:bg-orange-600 text-white border border-gray-700 text-[10px] font-bold px-2 py-0.5 rounded shadow cursor-pointer change-contact-line-btn">Edit</button>
+                                    </div>
+                                </div>
                             ` : ''}
                         </div>
                     </div>
@@ -328,10 +370,14 @@ document.addEventListener('DOMContentLoaded', () => {
             engName: document.getElementById('edit-engName').innerText.trim(),
             nickname: document.getElementById('edit-nickname').innerText.trim(),
             role: document.getElementById('edit-role').innerText.trim(),
-            email: document.getElementById('edit-email').innerText.trim(),
-            phone: document.getElementById('edit-phone').innerText.trim(),
+            email: document.getElementById('contact-email-link').innerText.trim(),
+            phone: document.getElementById('contact-phone-link').innerText.trim(),
             address: document.getElementById('edit-address').innerText.trim(),
-            line: document.getElementById('edit-line-url') ? document.getElementById('edit-line-url').getAttribute('href') : (data.personalInfo.line || ""),
+            line: document.getElementById('contact-line-link') ? document.getElementById('contact-line-link').getAttribute('href') : (data.personalInfo.line || ""),
+            lineText: document.getElementById('contact-line-link') ? document.getElementById('contact-line-link').innerText.trim() : (data.personalInfo.lineText || "แอดไลน์ที่นี่"),
+            emailIcon: document.getElementById('contact-email-card') ? document.getElementById('contact-email-card').dataset.iconType : (data.personalInfo.emailIcon || "Mail"),
+            phoneIcon: document.getElementById('contact-phone-card') ? document.getElementById('contact-phone-card').dataset.iconType : (data.personalInfo.phoneIcon || "Phone"),
+            lineIcon: document.getElementById('contact-line-card') ? document.getElementById('contact-line-card').dataset.iconType : (data.personalInfo.lineIcon || "Line"),
             facebook: data.personalInfo.facebook || "",
             itch: data.personalInfo.itch || "",
             profileImage: document.getElementById('profile-image-view') ? document.getElementById('profile-image-view').getAttribute('src') : (data.personalInfo.profileImage || null),
@@ -403,6 +449,112 @@ window.PortfolioApp.DEFAULT_DATA = ${JSON.stringify(updatedData, null, 4)};
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
+    };
+
+    // Show a premium visual icon picker modal
+    const showIconPicker = (currentIcon, onSelect) => {
+        // Remove existing modal if any
+        const existing = document.getElementById('icon-picker-modal');
+        if (existing) existing.remove();
+
+        const modal = document.createElement('div');
+        modal.id = 'icon-picker-modal';
+        modal.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in';
+        
+        // Build icon grid items
+        const iconKeys = Object.keys(Icons).filter(k => k !== 'Menu' && k !== 'X' && k !== 'ChevronDown'); // hide navigation SVGs
+        const gridHtml = iconKeys.map(key => {
+            const isActive = key === currentIcon;
+            return `
+                <button type="button" data-icon-key="${key}" class="icon-picker-item flex flex-col items-center justify-center p-3 rounded-xl border ${isActive ? 'border-orange-500 bg-orange-500/10 text-orange-400 font-bold' : 'border-gray-800 bg-gray-900/40 text-gray-400 hover:text-white hover:border-gray-700 hover:bg-gray-850'} transition-all duration-200 cursor-pointer group">
+                    <div class="w-8 h-8 mb-2 group-hover:scale-110 transition-transform duration-200">${Icons[key]}</div>
+                    <span class="text-[9px] font-bold tracking-wider uppercase text-center truncate w-full">${key}</span>
+                </button>
+            `;
+        }).join('');
+
+        modal.innerHTML = `
+            <div class="bg-gray-950 border border-gray-900 rounded-2xl w-full max-w-lg max-h-[85vh] flex flex-col shadow-2xl overflow-hidden animate-fade-in-up">
+                <!-- Modal Header -->
+                <div class="px-6 py-4 border-b border-gray-900 flex justify-between items-center bg-gray-950/80">
+                    <div>
+                        <h3 class="text-xs font-black text-white uppercase tracking-wider">เลือกไอคอน (Select Icon)</h3>
+                        <p class="text-[10px] text-gray-500 font-light mt-0.5">คลิกเลือกไอคอนที่ต้องการเปลี่ยนสำหรับหัวข้อนี้</p>
+                    </div>
+                    <button id="close-icon-picker-btn" class="p-2 text-gray-400 hover:text-white rounded-lg hover:bg-gray-900 transition-colors cursor-pointer">
+                        <div class="w-4 h-4">${Icons.X || '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>'}</div>
+                    </button>
+                </div>
+                <!-- Modal Body (Scrollable Icon Grid) -->
+                <div class="p-6 overflow-y-auto grid grid-cols-3 sm:grid-cols-4 gap-3 bg-gray-950/40">
+                    ${gridHtml}
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        // Bind events
+        const closeModal = () => {
+            modal.classList.add('opacity-0');
+            modal.style.transition = 'opacity 0.2s ease-out';
+            setTimeout(() => modal.remove(), 200);
+        };
+
+        document.getElementById('close-icon-picker-btn').addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+        modal.querySelectorAll('.icon-picker-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const selectedKey = item.dataset.iconKey;
+                onSelect(selectedKey);
+                closeModal();
+            });
+        });
+    };
+
+    // Helper to convert standard Youtube URLs to Embed URLs
+    const getYoutubeEmbedUrl = (url) => {
+        if (!url) return '';
+        if (url.includes('youtube.com/embed/')) return url;
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+        const match = url.match(regExp);
+        if (match && match[2].length === 11) {
+            return `https://www.youtube.com/embed/${match[2]}`;
+        }
+        return url;
+    };
+
+    // Helper to render responsive video player iframe/video tags
+    const renderVideoPlayer = (url) => {
+        if (!url) return '';
+        const embedUrl = getYoutubeEmbedUrl(url);
+        const isDirectVideo = url.endsWith('.mp4') || url.endsWith('.webm') || url.endsWith('.ogg');
+        
+        if (isDirectVideo) {
+            return `
+                <div class="relative w-full aspect-video rounded-xl overflow-hidden bg-black/60 border border-gray-900 shadow-inner mt-4 z-10 animate-fade-in">
+                    <video src="${url}" controls class="w-full h-full object-cover"></video>
+                </div>
+            `;
+        } else if (embedUrl.includes('youtube.com/embed/')) {
+            return `
+                <div class="relative w-full aspect-video rounded-xl overflow-hidden bg-black/60 border border-gray-900 shadow-inner mt-4 z-10 animate-fade-in">
+                    <iframe src="${embedUrl}" class="absolute inset-0 w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+            `;
+        } else {
+            return `
+                <div class="mt-4 bg-gray-900/40 border border-gray-900 p-3.5 rounded-xl flex items-center justify-between gap-3 animate-fade-in">
+                    <span class="text-xs text-gray-400 truncate flex-1">${url}</span>
+                    <a href="${url}" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 bg-orange-500/10 hover:bg-orange-500 text-orange-400 hover:text-white border border-orange-500/20 hover:border-orange-500 font-bold rounded-lg text-[10px] transition-colors flex items-center gap-1">
+                        Play Demo <div class="w-2.5 h-2.5">${Icons.ExternalLink}</div>
+                    </a>
+                </div>
+            `;
+        }
     };
 
     // Bind event handlers
@@ -484,7 +636,6 @@ window.PortfolioApp.DEFAULT_DATA = ${JSON.stringify(updatedData, null, 4)};
         const navLogo = document.getElementById('nav-logo');
         if (navLogo) {
             navLogo.addEventListener('click', (e) => {
-                // If already in edit mode, it scrolls to home. Otherwise check password
                 if (document.body.classList.contains('edit-mode-active')) {
                     scrollToSection('home');
                     return;
@@ -493,7 +644,8 @@ window.PortfolioApp.DEFAULT_DATA = ${JSON.stringify(updatedData, null, 4)};
                 const password = prompt("กรุณากรอกรหัสผ่านเพื่อเปิดโหมดแก้ไข (Edit Mode):");
                 if (password === "Pas#od15BeSt_2881") {
                     document.body.classList.add('edit-mode-active');
-                    // Force designated edit fields to be editable
+                    render();
+                    document.body.classList.add('edit-mode-active');
                     document.querySelectorAll('[data-editable]').forEach(el => {
                         el.contentEditable = "true";
                     });
@@ -535,7 +687,7 @@ window.PortfolioApp.DEFAULT_DATA = ${JSON.stringify(updatedData, null, 4)};
                     el.contentEditable = "false";
                 });
                 alert("ออกจากโหมดแก้ไขแล้ว");
-                render(); // Re-render to clear temporary UI modifications
+                render();
             });
         }
 
@@ -598,32 +750,21 @@ window.PortfolioApp.DEFAULT_DATA = ${JSON.stringify(updatedData, null, 4)};
             });
         }
 
-        // Scroll Spy handler
-        const handleScroll = () => {
-            const sections = ['home', 'about', 'skills', 'projects', 'contact'];
-            const scrollPosition = window.scrollY + 220;
-
-            sections.forEach(section => {
-                const element = document.getElementById(section);
-                if (element) {
-                    const top = element.offsetTop;
-                    const height = element.offsetHeight;
-                    if (scrollPosition >= top && scrollPosition < top + height) {
-                        desktopNavLinks.forEach(btn => {
-                            if (btn.dataset.target === section) {
-                                btn.classList.add('text-orange-400');
-                                btn.classList.remove('text-gray-400');
-                            } else {
-                                btn.classList.remove('text-orange-400');
-                                btn.classList.add('text-gray-400');
-                            }
-                        });
-                    }
-                }
+        // Synchronize name elements across different sections
+        const syncGroup = (ids) => {
+            const elements = ids.map(id => document.getElementById(id)).filter(el => el);
+            elements.forEach(el => {
+                el.addEventListener('input', () => {
+                    elements.forEach(otherEl => {
+                        if (otherEl !== el) {
+                            otherEl.innerText = el.innerText;
+                        }
+                    });
+                });
             });
         };
-
-        window.addEventListener('scroll', handleScroll);
+        syncGroup(['edit-name', 'edit-info-name']);
+        syncGroup(['edit-engName', 'edit-info-engName', 'edit-footname']);
     };
 
     // Global listener for dynamic edit mode UI operations (Delete item, add tag inline)
@@ -694,36 +835,19 @@ window.PortfolioApp.DEFAULT_DATA = ${JSON.stringify(updatedData, null, 4)};
         if (e.target.classList.contains('change-project-img-btn')) {
             const card = e.target.closest('.project-card');
             const imgContainer = card.querySelector('.project-image-container');
-            let currentImg = imgContainer.querySelector('img') ? imgContainer.querySelector('img').getAttribute('src') : "";
+            const currentImg = imgContainer.querySelector('img') ? imgContainer.querySelector('img').getAttribute('src') : "";
             const url = prompt("วางลิงก์รูปภาพของโครงการ (Image URL):", currentImg);
             if (url !== null) {
-                if (url.trim()) {
-                    imgContainer.innerHTML = `
-                        <img src="${url.trim()}" alt="Project Image" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-3 transition-opacity duration-300 link-overlay">
-                            ${card.dataset.link && card.dataset.link !== "#" ? `
-                                <a href="${card.dataset.link}" target="_blank" rel="noopener noreferrer" class="p-3 bg-orange-500 text-white rounded-full hover:scale-110 transition-transform shadow-lg w-11 h-11 flex items-center justify-center project-link-anchor">
-                                    ${Icons.ExternalLink}
-                                </a>
-                            ` : ''}
-                        </div>
-                        <div class="edit-control absolute top-2 right-2 flex gap-1.5 z-20" style="display: flex;">
-                            <button class="bg-gray-900/90 hover:bg-orange-600 text-white border border-gray-700 text-[10px] font-bold px-2.5 py-1 rounded shadow cursor-pointer change-project-img-btn">Img</button>
-                            <button class="bg-gray-900/90 hover:bg-orange-600 text-white border border-gray-700 text-[10px] font-bold px-2.5 py-1 rounded shadow cursor-pointer change-project-link-btn">Link</button>
-                        </div>
-                    `;
-                } else {
-                    imgContainer.innerHTML = `
-                        <div class="text-center p-6 text-white/50 project-placeholder">
-                            <div class="w-11 h-11 mx-auto mb-2 opacity-40 group-hover:scale-105 transition-transform">${Icons.Gamepad2}</div>
-                            <span class="text-xs uppercase font-extrabold tracking-widest project-engine-badge">${card.querySelector('.project-engine').innerText}</span>
-                        </div>
-                        <div class="edit-control absolute top-2 right-2 flex gap-1.5 z-20" style="display: flex;">
-                            <button class="bg-gray-900/90 hover:bg-orange-600 text-white border border-gray-700 text-[10px] font-bold px-2.5 py-1 rounded shadow cursor-pointer change-project-img-btn">Img</button>
-                            <button class="bg-gray-900/90 hover:bg-orange-600 text-white border border-gray-700 text-[10px] font-bold px-2.5 py-1 rounded shadow cursor-pointer change-project-link-btn">Link</button>
-                        </div>
-                    `;
+                const updated = scrapeData();
+                const projId = parseInt(card.dataset.id);
+                const projIndex = updated.projects.findIndex(p => p.id === projId);
+                if (projIndex !== -1) {
+                    updated.projects[projIndex].image = url.trim() || null;
                 }
+                data = updated;
+                render();
+                document.body.classList.add('edit-mode-active');
+                document.querySelectorAll('[data-editable]').forEach(el => el.contentEditable = "true");
             }
         }
 
@@ -733,16 +857,140 @@ window.PortfolioApp.DEFAULT_DATA = ${JSON.stringify(updatedData, null, 4)};
             const currentLink = card.dataset.link || "#";
             const url = prompt("วางลิงก์ร้านค้า/ดาวน์โหลดของโครงการ (Store/Play Link):", currentLink);
             if (url !== null) {
-                card.dataset.link = url.trim() || "#";
-                // Update overlay anchor
-                const anchor = card.querySelector('.project-link-anchor');
-                if (anchor) anchor.setAttribute('href', card.dataset.link);
-                // Update bottom anchor
-                const bottomAnchor = card.querySelector('a.inline-flex');
-                if (bottomAnchor) bottomAnchor.setAttribute('href', card.dataset.link);
+                const updated = scrapeData();
+                const projId = parseInt(card.dataset.id);
+                const projIndex = updated.projects.findIndex(p => p.id === projId);
+                if (projIndex !== -1) {
+                    updated.projects[projIndex].link = url.trim() || "#";
+                }
+                data = updated;
+                render();
+                document.body.classList.add('edit-mode-active');
+                document.querySelectorAll('[data-editable]').forEach(el => el.contentEditable = "true");
+            }
+        }
+
+        // 14. Change project video/demo link URL
+        if (e.target.classList.contains('change-project-video-btn')) {
+            const card = e.target.closest('.project-card');
+            const currentEmbed = card.dataset.embedUrl || "";
+            const url = prompt("วางลิงก์วิดีโอตัวอย่างโครงการ (เช่น ลิงก์ YouTube หรือลิงก์วิดีโอตรง .mp4):", currentEmbed);
+            if (url !== null) {
+                const updated = scrapeData();
+                const projId = parseInt(card.dataset.id);
+                const projIndex = updated.projects.findIndex(p => p.id === projId);
+                if (projIndex !== -1) {
+                    updated.projects[projIndex].embedUrl = url.trim();
+                }
+                data = updated;
+                render();
+                document.body.classList.add('edit-mode-active');
+                document.querySelectorAll('[data-editable]').forEach(el => el.contentEditable = "true");
+            }
+        }
+
+        // 9. Change skill category icon
+        if (e.target.classList.contains('change-category-icon-btn')) {
+            const card = e.target.closest('.skill-card');
+            const iconContainer = card.querySelector('.skill-category-icon-container');
+            const currentIconType = card.dataset.iconType || "Cpu";
+            showIconPicker(currentIconType, (newIconType) => {
+                card.dataset.iconType = newIconType;
+                iconContainer.innerHTML = Icons[newIconType];
+            });
+        }
+
+        // 10. Change contact email details (Gmail)
+        if (e.target.classList.contains('change-contact-email-btn')) {
+            const emailLink = document.getElementById('contact-email-link');
+            const currentEmail = emailLink.innerText.trim();
+            const newEmail = prompt("ระบุอีเมลสำหรับติดต่อ (Email Address):", currentEmail);
+            if (newEmail !== null && newEmail.trim()) {
+                emailLink.innerText = newEmail.trim();
+                emailLink.setAttribute('href', `mailto:${newEmail.trim()}`);
+            }
+        }
+
+        // 11. Change contact phone details
+        if (e.target.classList.contains('change-contact-phone-btn')) {
+            const phoneLink = document.getElementById('contact-phone-link');
+            const currentPhone = phoneLink.innerText.trim();
+            const newPhone = prompt("ระบุเบอร์โทรศัพท์สำหรับติดต่อ (Phone Number):", currentPhone);
+            if (newPhone !== null && newPhone.trim()) {
+                phoneLink.innerText = newPhone.trim();
+                phoneLink.setAttribute('href', `tel:${newPhone.trim()}`);
+            }
+        }
+
+        // 12. Change contact Line link details
+        if (e.target.classList.contains('change-contact-line-btn')) {
+            const lineLink = document.getElementById('contact-line-link');
+            const currentLine = lineLink.getAttribute('href');
+            const currentText = lineLink.innerText.trim();
+            const newLine = prompt("วางลิงก์ Line แอดเพื่อน (Line Link URL):", currentLine);
+            if (newLine !== null) {
+                const newText = prompt("ป้อนข้อความที่ต้องการแสดง (เช่น ID ไลน์ หรือคำว่า 'แอดไลน์ที่นี่'):", currentText);
+                lineLink.setAttribute('href', newLine.trim() || '#');
+                if (newText !== null && newText.trim()) {
+                    lineLink.innerText = newText.trim();
+                }
+            }
+        }
+
+        // 13. Change contact card icon
+        if (e.target.classList.contains('change-contact-icon-btn')) {
+            const contactType = e.target.dataset.contactType;
+            let cardId = '';
+            let defaultIcon = 'Mail';
+            if (contactType === 'email') {
+                cardId = 'contact-email-card';
+                defaultIcon = 'Mail';
+            } else if (contactType === 'phone') {
+                cardId = 'contact-phone-card';
+                defaultIcon = 'Phone';
+            } else if (contactType === 'line') {
+                cardId = 'contact-line-card';
+                defaultIcon = 'Line';
+            }
+            const card = document.getElementById(cardId);
+            if (card) {
+                const iconContainer = card.querySelector('.contact-icon-container');
+                const currentIconType = card.dataset.iconType || defaultIcon;
+                showIconPicker(currentIconType, (newIconType) => {
+                    card.dataset.iconType = newIconType;
+                    iconContainer.innerHTML = Icons[newIconType];
+                });
             }
         }
     });
+
+    // Global Scroll Spy Handler
+    const handleScroll = () => {
+        const sections = ['home', 'about', 'skills', 'projects', 'contact'];
+        const scrollPosition = window.scrollY + 220;
+        const desktopNavLinks = document.querySelectorAll('#nav-links-desktop button');
+        if (!desktopNavLinks.length) return;
+
+        sections.forEach(section => {
+            const element = document.getElementById(section);
+            if (element) {
+                const top = element.offsetTop;
+                const height = element.offsetHeight;
+                if (scrollPosition >= top && scrollPosition < top + height) {
+                    desktopNavLinks.forEach(btn => {
+                        if (btn.dataset.target === section) {
+                            btn.classList.add('text-orange-400');
+                            btn.classList.remove('text-gray-400');
+                        } else {
+                            btn.classList.remove('text-orange-400');
+                            btn.classList.add('text-gray-400');
+                        }
+                    });
+                }
+            }
+        });
+    };
+    window.addEventListener('scroll', handleScroll);
 
     // Initial render
     render();

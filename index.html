@@ -42,10 +42,10 @@
 
         /* Edit Mode Styles */
         .edit-control {
-            display: none;
+            display: none !important;
         }
         body.edit-mode-active .edit-control {
-            display: inline-flex;
+            display: flex !important;
         }
         body.edit-mode-active [data-editable] {
             outline: 1px dashed rgba(249, 115, 22, 0.5);
